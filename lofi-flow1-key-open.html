@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lo-fi Flow 1: Открытие ключом — Спутник</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #f5f5f5;
+    color: #1a1a1a;
+    padding: 40px;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  h2 { font-size: 22px; font-weight: 700; margin: 48px 0 16px; }
+  .subtitle { font-size: 14px; color: #666; margin-bottom: 32px; }
+  .section-desc { font-size: 13px; color: #666; margin-bottom: 24px; }
+
+  .flow-container {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #ddd;
+    padding: 32px;
+    overflow: auto;
+  }
+
+  /* ====== SCREEN DETAIL CARDS ====== */
+  .screens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 24px;
+  }
+  .detail-card {
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .detail-card .dc-header {
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    background: #333;
+  }
+  .detail-card .dc-body {
+    padding: 16px;
+    display: flex;
+    gap: 16px;
+  }
+  .dc-wireframe {
+    flex-shrink: 0;
+    width: 200px;
+    height: 150px;
+    border: 2px solid #999;
+    border-radius: 6px;
+    padding: 8px 10px;
+    background: #1a1a2e;
+    color: #eee;
+    font-size: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .dc-wireframe .wf-top { font-size: 7px; color: #888; display: flex; justify-content: space-between; align-items: flex-start; }
+  .dc-wireframe .wf-center { text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .dc-wireframe .wf-icon { font-size: 22px; margin: 2px 0; }
+  .dc-wireframe .wf-title { font-size: 9px; font-weight: 700; }
+  .dc-wireframe .wf-sub { font-size: 7px; color: #aaa; margin-top: 2px; }
+  .dc-wireframe .wf-bottom { text-align: center; font-size: 7px; color: #888; }
+
+  .dc-info { flex: 1; font-size: 11px; }
+  .dc-info h4 { font-size: 11px; font-weight: 700; margin: 8px 0 3px; color: #333; }
+  .dc-info h4:first-child { margin-top: 0; }
+  .dc-info ul { padding-left: 14px; line-height: 1.6; color: #444; }
+
+  .dc-info h4.mandatory::before {
+    content: ""; display: inline-block; width: 7px; height: 7px;
+    background: #333; border-radius: 50%; margin-right: 4px; vertical-align: middle;
+  }
+  .dc-info h4.optional::before {
+    content: ""; display: inline-block; width: 7px; height: 7px;
+    border: 2px solid #333; border-radius: 50%; margin-right: 4px; vertical-align: middle;
+  }
+  .dc-info h4.sound::before {
+    content: "))"; font-size: 8px; font-weight: 700; margin-right: 4px; color: #333;
+  }
+
+  .questions-box, .info-box {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    line-height: 1.6;
+  }
+  .questions-box { background: #fff9e6; border: 1px solid #f9ab00; }
+  .questions-box strong { color: #b37a00; }
+  .info-box { background: #f3f3f3; border: 1px solid #bbb; }
+  .info-box strong { color: #555; }
+  .questions-box ul, .info-box ul { padding-left: 14px; }
+
+  /* ====== FULL SIZE SCREENS ====== */
+  .fullsize-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+  .fullsize-item { flex-shrink: 0; }
+  .fullsize-label { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .fullsize-screen {
+    width: 427px;
+    height: 320px;
+    border: 3px solid #333;
+    border-radius: 8px;
+    background: #1a1a2e;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px 20px;
+    font-family: system-ui, sans-serif;
+  }
+
+  .mermaid { width: 100%; }
+
+  /* ====== HARDWARE REFERENCE ====== */
+  .hw-note {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #444;
+    margin-bottom: 24px;
+  }
+  .hw-note strong { color: #333; }
+</style>
+</head>
+<body>
+
+<h1>Lo-fi Flow 1: Открытие ключом</h1>
+<p class="subtitle">Спутник — домофон с дисплеем | 640x480px (горизонтальный), 2.83" TFT | Не сенсорный | v1.0 от 03.03.2026</p>
+
+<div class="hw-note">
+  <strong>Физические элементы панели:</strong> Камера + микрофон (сверху) · Экран 2.83" landscape (середина) · Клавиатура: цифры 0–9, кнопка вызова 🔔, кнопка отмены ✕ · Считыватель ключей RFID (большая круглая кнопка внизу) · Динамики (по бокам внизу)<br>
+  <strong>Экран:</strong> Всегда включён (нет ИК-пробуждения в v1). Ввод только через физическую клавиатуру.
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 1: FLOW DIAGRAM -->
+<!-- ================================================================ -->
+<h2>1. Flow-диаграмма</h2>
+<p class="section-desc">Хозяин подходит к домофону и прикладывает ключ к RFID-считывателю. Голубые блоки — фоновые процессы. Зелёные — успех, красные — ошибка.</p>
+
+<div class="flow-container">
+<pre class="mermaid">
+flowchart TD
+    classDef screen fill:#fff,stroke:#333,stroke-width:2px,color:#333
+    classDef bgProc fill:#e8f0fe,stroke:#4285f4,stroke-width:2px,color:#1a1a1a
+    classDef success fill:#e6f4ea,stroke:#34a853,stroke-width:2px,color:#1a1a1a
+    classDef error fill:#fce8e6,stroke:#ea4335,stroke-width:2px,color:#1a1a1a
+
+    S1["🖥️ &lt;b&gt;1. Экран ожидания&lt;/b&gt;&lt;br/&gt;Лого УК · Время · Погода · Дата"]:::screen
+
+    S1 -- "ключ приложен к RFID" --> BG1
+
+    BG1{{"⚙️ &lt;b&gt;Валидация ключа&lt;/b&gt;&lt;br/&gt;Проверка в системе"}}:::bgProc
+
+    BG1 -- "✅ Ключ валидный" --> S2
+    BG1 -- "❌ Ключ невалидный" --> S3
+
+    S2["✅ &lt;b&gt;2. Дверь открыта&lt;/b&gt;&lt;br/&gt;Зелёная индикация&lt;br/&gt;«Дверь открыта»&lt;br/&gt;Таймер"]:::success
+
+    S3["❌ &lt;b&gt;3. Доступ запрещён&lt;/b&gt;&lt;br/&gt;Красная индикация&lt;br/&gt;«Доступ запрещён»&lt;br/&gt;Таймер"]:::error
+
+    S2 -. "через X сек" .-> S1
+    S3 -. "через X сек" .-> S1
+</pre>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 2: SCREEN DETAIL CARDS -->
+<!-- ================================================================ -->
+<h2>2. Детализация экранов</h2>
+<p class="section-desc">Каждая карточка: wireframe экрана (landscape 640x480) + обязательные/опциональные элементы + звук + вопросы.</p>
+
+<div class="screens-grid">
+
+  <!-- Card 1: Экран ожидания -->
+  <div class="detail-card">
+    <div class="dc-header">1. Экран ожидания</div>
+    <div class="dc-body">
+      <div class="dc-wireframe">
+        <div class="wf-top">
+          <div style="border:1px dashed #555;border-radius:2px;padding:2px 6px;font-size:8px;color:#aaa;">[Лого УК]</div>
+          <div style="text-align:right;font-size:7px;color:#888;">10:30<br>13 мая, вт</div>
+        </div>
+        <div class="wf-center">
+          <div style="font-size:8px;color:#888;">15° Солнечно ☀</div>
+        </div>
+        <div class="wf-bottom" style="font-size:6px;color:#666;">Экран всегда включён</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul>
+          <li>Логотип управляющей компании (УК)</li>
+          <li>Время (часы : минуты)</li>
+          <li>Дата (день, месяц, день недели)</li>
+          <li>Погода (температура, состояние, иконка)</li>
+        </ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul>
+          <li>Адрес (улица, дом), номер подъезда</li>
+          <li>Диапазон квартир</li>
+          <li>Праздничный / тематический контент</li>
+        </ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul><li>Нет (тишина)</li></ul>
+        <div class="info-box"><strong>Доп. информация:</strong>
+          <ul>
+            <li>Экран всегда включён (нет ИК-датчика в v1)</li>
+            <li>Источник данных погоды — интернет-сервис</li>
+          </ul>
+        </div>
+        <div class="questions-box"><strong>Вопросы:</strong>
+          <ul>
+            <li>Формат логотипа УК: размер, разрешение, формат файла?</li>
+            <li>Откуда берутся данные погоды?</li>
+            <li>Нужен ли адрес/подъезд на idle-экране или достаточно лого?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Дверь открыта -->
+  <div class="detail-card" style="border-color:#34a853;">
+    <div class="dc-header" style="background:#34a853;">2. Дверь открыта</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#34a853;">
+        <div class="wf-top">
+          <div style="font-size:7px;color:#888;">[Лого УК]</div>
+          <div style="font-size:7px;color:#888;">10:30</div>
+        </div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#34a853;">✔</div>
+          <div class="wf-title" style="color:#34a853;">Дверь открыта</div>
+        </div>
+        <div class="wf-bottom" style="color:#34a853;">Закроется через 5 сек</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul>
+          <li>Зелёная индикация успеха (иконка — галочка / открытый замок)</li>
+          <li>Текст: «Дверь открыта»</li>
+          <li>Таймер обратного отсчёта</li>
+        </ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul>
+          <li>Номер квартиры</li>
+          <li>Лого УК, время (из idle)</li>
+        </ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul>
+          <li>Звук успешного доступа</li>
+          <li>Голосовое: «Дверь открыта» (опц.)</li>
+        </ul>
+        <div class="info-box"><strong>Доп. информация:</strong>
+          <ul>
+            <li>После таймера → автовозврат на экран ожидания</li>
+            <li>Зелёный цвет — отраслевой стандарт (2N, Akuvox, Comelit)</li>
+          </ul>
+        </div>
+        <div class="questions-box"><strong>Вопросы:</strong>
+          <ul>
+            <li>Длительность таймера (5 сек? настраиваемо?)</li>
+            <li>Нужно ли голосовое озвучивание?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: Доступ запрещён -->
+  <div class="detail-card" style="border-color:#ea4335;">
+    <div class="dc-header" style="background:#ea4335;">3. Доступ запрещён</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#ea4335;">
+        <div class="wf-top">
+          <div style="font-size:7px;color:#888;">[Лого УК]</div>
+          <div style="font-size:7px;color:#888;">10:30</div>
+        </div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#ea4335;">✘</div>
+          <div class="wf-title" style="color:#ea4335;">Доступ запрещён</div>
+        </div>
+        <div class="wf-bottom" style="color:#ea4335;">Через 5 сек</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul>
+          <li>Красная индикация ошибки (иконка — крест / закрытый замок)</li>
+          <li>Текст: «Доступ запрещён»</li>
+          <li>Таймер (через X сек → экран ожидания)</li>
+        </ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul>
+          <li>Текст пояснения: «Ключ не зарегистрирован»</li>
+          <li>Лого УК, время</li>
+        </ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul>
+          <li>Звук отказа в доступе</li>
+          <li>Голосовое: «Доступ запрещён» (опц.)</li>
+        </ul>
+        <div class="questions-box"><strong>Вопросы:</strong>
+          <ul>
+            <li>Нужен ли текст пояснения причины отказа?</li>
+            <li>Длительность отображения?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 3: BACKGROUND PROCESSES -->
+<!-- ================================================================ -->
+<h2>3. Фоновые процессы</h2>
+
+<div style="background:#fff;border-radius:12px;border:1px solid #ddd;padding:24px;overflow:auto;">
+  <table style="width:100%;border-collapse:collapse;font-size:12px;">
+    <thead>
+      <tr style="background:#e8f0fe;">
+        <th style="padding:8px 12px;text-align:left;border:1px solid #ddd;">#</th>
+        <th style="padding:8px 12px;text-align:left;border:1px solid #ddd;">Процесс</th>
+        <th style="padding:8px 12px;text-align:left;border:1px solid #ddd;">Триггер</th>
+        <th style="padding:8px 12px;text-align:left;border:1px solid #ddd;">Успех</th>
+        <th style="padding:8px 12px;text-align:left;border:1px solid #ddd;">Ошибка</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding:8px 12px;border:1px solid #ddd;">1</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;">Валидация ключа</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;">Ключ приложен к RFID-считывателю</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;color:#34a853;">→ Дверь открыта</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;color:#ea4335;">→ Доступ запрещён</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 4: FULL-SIZE SCREENS -->
+<!-- ================================================================ -->
+<h2>4. Полноразмерные экраны (427x320, масштаб 2:3 от 640x480)</h2>
+<p class="section-desc">Каждый экран приближен к реальному виду дисплея домофона. Тёмная тема, горизонтальная ориентация.</p>
+
+<div class="fullsize-grid">
+  <div class="fullsize-item">
+    <div class="fullsize-label">1. Экран ожидания</div>
+    <div class="fullsize-screen">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="border:1px dashed #555;border-radius:4px;padding:4px 12px;font-size:10px;color:#aaa;">[Лого УК]</div>
+        <div style="text-align:right;">
+          <div style="font-size:28px;font-weight:700;color:#fff;line-height:1;">10:30</div>
+          <div style="font-size:10px;color:#888;">13 мая, вторник</div>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:36px;font-weight:300;color:#fff;">15°</div>
+        <div style="font-size:12px;color:#aaa;">Солнечно</div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">2. Дверь открыта</div>
+    <div class="fullsize-screen" style="border-color:#34a853;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="font-size:9px;color:#555;">[Лого УК]</div>
+        <div style="font-size:10px;color:#888;">10:30</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:60px;height:60px;border:3px solid #34a853;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#34a853;">✔</div>
+        <div style="font-size:22px;font-weight:700;color:#34a853;">Дверь открыта</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="display:inline-block;border:2px solid #34a853;border-radius:14px;padding:4px 18px;font-size:12px;color:#34a853;">Закроется через <b>5</b> сек</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">3. Доступ запрещён</div>
+    <div class="fullsize-screen" style="border-color:#ea4335;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="font-size:9px;color:#555;">[Лого УК]</div>
+        <div style="font-size:10px;color:#888;">10:30</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:60px;height:60px;border:3px solid #ea4335;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#ea4335;">✘</div>
+        <div style="font-size:22px;font-weight:700;color:#ea4335;">Доступ запрещён</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="display:inline-block;border:2px solid #ea4335;border-radius:14px;padding:4px 18px;font-size:12px;color:#ea4335;">Через <b>5</b> сек</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      fontFamily: 'Inter, system-ui, sans-serif',
+      fontSize: '13px',
+      primaryColor: '#e8f0fe',
+      primaryBorderColor: '#4285f4',
+      lineColor: '#888',
+      textColor: '#1a1a1a'
+    },
+    flowchart: {
+      htmlLabels: true,
+      curve: 'basis',
+      padding: 20,
+      nodeSpacing: 40,
+      rankSpacing: 60
+    }
+  });
+</script>
+
+</body>
+</html>
