@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lo-fi Flow 2: Гость звонит в квартиру — Спутник</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #f5f5f5;
+    color: #1a1a1a;
+    padding: 40px;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  h2 { font-size: 22px; font-weight: 700; margin: 48px 0 16px; }
+  .subtitle { font-size: 14px; color: #666; margin-bottom: 32px; }
+  .section-desc { font-size: 13px; color: #666; margin-bottom: 24px; }
+
+  .flow-container {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #ddd;
+    padding: 32px;
+    overflow: auto;
+  }
+
+  /* ====== SCREEN DETAIL CARDS ====== */
+  .screens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 24px;
+  }
+  .detail-card {
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .detail-card .dc-header {
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    background: #333;
+  }
+  .detail-card .dc-body {
+    padding: 16px;
+    display: flex;
+    gap: 16px;
+  }
+  .dc-wireframe {
+    flex-shrink: 0;
+    width: 200px;
+    height: 150px;
+    border: 2px solid #999;
+    border-radius: 6px;
+    padding: 8px 10px;
+    background: #1a1a2e;
+    color: #eee;
+    font-size: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .dc-wireframe .wf-top { font-size: 7px; color: #888; display: flex; justify-content: space-between; align-items: flex-start; }
+  .dc-wireframe .wf-center { text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .dc-wireframe .wf-icon { font-size: 22px; margin: 2px 0; }
+  .dc-wireframe .wf-title { font-size: 9px; font-weight: 700; }
+  .dc-wireframe .wf-sub { font-size: 7px; color: #aaa; margin-top: 2px; }
+  .dc-wireframe .wf-bottom { text-align: center; font-size: 7px; color: #888; }
+
+  .dc-info { flex: 1; font-size: 11px; }
+  .dc-info h4 { font-size: 11px; font-weight: 700; margin: 8px 0 3px; color: #333; }
+  .dc-info h4:first-child { margin-top: 0; }
+  .dc-info ul { padding-left: 14px; line-height: 1.6; color: #444; }
+
+  .dc-info h4.mandatory::before {
+    content: ""; display: inline-block; width: 7px; height: 7px;
+    background: #333; border-radius: 50%; margin-right: 4px; vertical-align: middle;
+  }
+  .dc-info h4.optional::before {
+    content: ""; display: inline-block; width: 7px; height: 7px;
+    border: 2px solid #333; border-radius: 50%; margin-right: 4px; vertical-align: middle;
+  }
+  .dc-info h4.sound::before {
+    content: "))"; font-size: 8px; font-weight: 700; margin-right: 4px; color: #333;
+  }
+
+  .questions-box, .info-box {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    line-height: 1.6;
+  }
+  .questions-box { background: #fff9e6; border: 1px solid #f9ab00; }
+  .questions-box strong { color: #b37a00; }
+  .info-box { background: #f3f3f3; border: 1px solid #bbb; }
+  .info-box strong { color: #555; }
+  .questions-box ul, .info-box ul { padding-left: 14px; }
+
+  /* ====== FULL SIZE SCREENS ====== */
+  .fullsize-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+  .fullsize-item { flex-shrink: 0; }
+  .fullsize-label { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .fullsize-screen {
+    width: 427px;
+    height: 320px;
+    border: 3px solid #333;
+    border-radius: 8px;
+    background: #1a1a2e;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px 20px;
+    font-family: system-ui, sans-serif;
+  }
+
+  .mermaid { width: 100%; }
+
+  .hw-note {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #444;
+    margin-bottom: 24px;
+  }
+  .hw-note strong { color: #333; }
+</style>
+</head>
+<body>
+
+<h1>Lo-fi Flow 2: Гость звонит в квартиру</h1>
+<p class="subtitle">Спутник — домофон с дисплеем | 640x480px (горизонтальный), 2.83" TFT | Не сенсорный | v1.0 от 03.03.2026</p>
+
+<div class="hw-note">
+  <strong>Физические элементы панели:</strong> Камера + микрофон (сверху) · Экран 2.83" landscape (середина) · Клавиатура: цифры 0–9, кнопка вызова 🔔, кнопка отмены ✕ · Считыватель ключей RFID (большая круглая кнопка внизу) · Динамики (по бокам внизу)<br>
+  <strong>Взаимодействие гостя:</strong> Набирает номер квартиры на физических кнопках 0–9 → нажимает 🔔 для вызова → говорит через микрофон/динамик. Кнопка ✕ для отмены/сброса.
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 1: FLOW DIAGRAM -->
+<!-- ================================================================ -->
+<h2>1. Flow-диаграмма</h2>
+<p class="section-desc">Гость подходит к домофону, набирает номер квартиры на физической клавиатуре и нажимает 🔔. Абонент отвечает и решает — открыть дверь или нет.</p>
+
+<div class="flow-container">
+<pre class="mermaid">
+flowchart TD
+    classDef screen fill:#fff,stroke:#333,stroke-width:2px,color:#333
+    classDef bgProc fill:#e8f0fe,stroke:#4285f4,stroke-width:2px,color:#1a1a1a
+    classDef success fill:#e6f4ea,stroke:#34a853,stroke-width:2px,color:#1a1a1a
+    classDef error fill:#fce8e6,stroke:#ea4335,stroke-width:2px,color:#1a1a1a
+    classDef active fill:#e0f2f1,stroke:#009688,stroke-width:2px,color:#1a1a1a
+    classDef neutral fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#333
+
+    S1["🖥️ &lt;b&gt;1. Экран ожидания&lt;/b&gt;&lt;br/&gt;Лого УК · Время · Погода"]:::screen
+
+    S1 -- "гость нажимает цифры 0–9" --> S2
+
+    S2["🔢 &lt;b&gt;2. Набор номера&lt;/b&gt;&lt;br/&gt;Крупные цифры: «42»&lt;br/&gt;Подсказка: нажмите 🔔"]:::screen
+
+    S2 -- "нажал 🔔" --> BG1
+    S2 -. "нажал ✕ / таймаут" .-> S1
+
+    BG1{{"⚙️ &lt;b&gt;Проверка номера&lt;/b&gt;&lt;br/&gt;Квартира существует?"}}:::bgProc
+
+    BG1 -- "❌ Не найдена" --> S6
+    BG1 -- "✅ Найдена" --> S3
+
+    S3["📞 &lt;b&gt;3. Вызов квартиры&lt;/b&gt;&lt;br/&gt;«Вызов кв. 42»&lt;br/&gt;Индикация гудков"]:::active
+
+    S3 -- "абонент ответил" --> S4
+    S3 -- "таймаут / нет ответа" --> S7
+
+    S4["🗣️ &lt;b&gt;4. Разговор&lt;/b&gt;&lt;br/&gt;Индикатор связи&lt;br/&gt;Таймер разговора"]:::active
+
+    S4 -- "абонент открыл дверь" --> S5
+    S4 -- "абонент завершил&lt;br/&gt;без открытия" --> S8
+
+    S5["✅ &lt;b&gt;5. Дверь открыта&lt;/b&gt;&lt;br/&gt;Зелёная индикация&lt;br/&gt;«Дверь открыта» · Таймер"]:::success
+
+    S6["❌ &lt;b&gt;6. Неверный номер&lt;/b&gt;&lt;br/&gt;«Квартира не найдена»"]:::error
+
+    S7["📵 &lt;b&gt;7. Нет ответа&lt;/b&gt;&lt;br/&gt;«Абонент не отвечает»"]:::neutral
+
+    S8["📵 &lt;b&gt;8. Вызов завершён&lt;/b&gt;&lt;br/&gt;«Вызов завершён»"]:::neutral
+
+    S5 -. "через X сек" .-> S1
+    S6 -. "через X сек" .-> S1
+    S7 -. "через X сек" .-> S1
+    S8 -. "через X сек" .-> S1
+</pre>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 2: SCREEN DETAIL CARDS -->
+<!-- ================================================================ -->
+<h2>2. Детализация экранов</h2>
+<p class="section-desc">Каждая карточка: wireframe экрана (landscape 640x480) + обязательные/опциональные элементы + звук + вопросы.</p>
+
+<div class="screens-grid">
+
+  <!-- Card 1: Экран ожидания -->
+  <div class="detail-card">
+    <div class="dc-header">1. Экран ожидания</div>
+    <div class="dc-body">
+      <div class="dc-wireframe">
+        <div class="wf-top">
+          <div style="border:1px dashed #555;border-radius:2px;padding:2px 6px;font-size:8px;color:#aaa;">[Лого УК]</div>
+          <div style="text-align:right;font-size:7px;color:#888;">10:30<br>13 мая, вт</div>
+        </div>
+        <div class="wf-center">
+          <div style="font-size:8px;color:#888;">15° Солнечно ☀</div>
+        </div>
+        <div class="wf-bottom" style="font-size:6px;color:#666;">Экран всегда включён</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul>
+          <li>Логотип управляющей компании</li>
+          <li>Время (часы : минуты)</li>
+          <li>Дата (день, месяц, день недели)</li>
+          <li>Погода (температура, состояние)</li>
+        </ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul>
+          <li>Адрес, подъезд, диапазон квартир</li>
+          <li>Праздничный контент</li>
+        </ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul><li>Нет</li></ul>
+        <div class="info-box"><strong>Доп. информация:</strong>
+          <ul><li>Экран всегда включён (нет ИК-датчика в v1)</li></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Набор номера -->
+  <div class="detail-card">
+    <div class="dc-header">2. Набор номера квартиры</div>
+    <div class="dc-body">
+      <div class="dc-wireframe">
+        <div class="wf-top">
+          <div style="font-size:7px;color:#888;">[Лого УК]</div>
+          <div style="font-size:7px;color:#888;">10:30</div>
+        </div>
+        <div class="wf-center">
+          <div style="font-size:6px;color:#888;margin-bottom:2px;">Номер квартиры:</div>
+          <div style="font-size:16px;font-weight:700;color:#fff;letter-spacing:3px;">42</div>
+          <div style="font-size:6px;color:#aaa;margin-top:4px;">Нажмите 🔔 для вызова</div>
+        </div>
+        <div class="wf-bottom" style="font-size:6px;">✕ — сброс</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul>
+          <li>Набираемый номер квартиры (крупным шрифтом)</li>
+          <li>Подсказка: «Нажмите 🔔 для вызова»</li>
+        </ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul>
+          <li>Лого УК, время</li>
+          <li>Подсказка «✕ — сброс»</li>
+        </ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul>
+          <li>Тональный звук при нажатии каждой цифры (DTMF)</li>
+        </ul>
+        <div class="info-box"><strong>Доп. информация:</strong>
+          <ul>
+            <li>Ввод через физические кнопки 0–9 на панели</li>
+            <li>Кнопка ✕ — стереть / сбросить набор</li>
+            <li>Таймаут неактивности → возврат на экран ожидания</li>
+          </ul>
+        </div>
+        <div class="questions-box"><strong>Вопросы:</strong>
+          <ul>
+            <li>Таймаут неактивности при наборе (сколько сек)?</li>
+            <li>Макс. количество цифр в номере квартиры?</li>
+            <li>Кнопка ✕ стирает последнюю цифру или весь номер?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: Вызов квартиры -->
+  <div class="detail-card" style="border-color:#009688;">
+    <div class="dc-header" style="background:#009688;">3. Вызов квартиры</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#009688;">
+        <div class="wf-top">
+          <div style="font-size:7px;color:#888;">[Лого УК]</div>
+          <div style="font-size:7px;color:#888;">10:30</div>
+        </div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#009688;">📞</div>
+          <div class="wf-title" style="color:#009688;">Вызов кв. 42</div>
+          <div class="wf-sub">Ожидание ответа...</div>
+        </div>
+        <div class="wf-bottom" style="color:#009688;">● ● ●</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul>
+          <li>Текст: «Вызов кв. XX»</li>
+          <li>Индикация вызова (анимация гудков / пульсация)</li>
+          <li>Номер вызываемой квартиры</li>
+        </ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul>
+          <li>Счётчик времени ожидания</li>
+          <li>Лого УК, время</li>
+        </ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul>
+          <li>Гудки вызова через динамик</li>
+        </ul>
+        <div class="info-box"><strong>Доп. информация:</strong>
+          <ul>
+            <li>Вызов идёт на все устройства абонента (трубка + МП)</li>
+            <li>Таймаут ожидания → «Нет ответа»</li>
+          </ul>
+        </div>
+        <div class="questions-box"><strong>Вопросы:</strong>
+          <ul>
+            <li>Длительность таймаута ожидания ответа?</li>
+            <li>Может ли гость отменить вызов кнопкой ✕?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 4: Разговор -->
+  <div class="detail-card" style="border-color:#009688;">
+    <div class="dc-header" style="background:#009688;">4. Разговор</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#009688;">
+        <div class="wf-top">
+          <div style="font-size:7px;color:#888;">[Лого УК]</div>
+          <div style="font-size:7px;color:#888;">10:30</div>
+        </div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#009688;">🗣️</div>
+          <div class="wf-title" style="color:#009688;">Разговор</div>
+          <div class="wf-sub">кв. 42</div>
+          <div style="font-size:6px;color:#4caf50;margin-top:2px;">● Связь</div>
+        </div>
+        <div class="wf-bottom" style="color:#009688;">0:12</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul>
+          <li>Индикатор активного разговора</li>
+          <li>Таймер длительности разговора</li>
+          <li>Номер квартиры</li>
+        </ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul>
+          <li>Лого УК, время</li>
+        </ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul>
+          <li>Двусторонняя голосовая связь (микрофон + динамик)</li>
+        </ul>
+        <div class="info-box"><strong>Доп. информация:</strong>
+          <ul>
+            <li>Камера транслирует видео гостя абоненту</li>
+            <li>Абонент может открыть дверь во время разговора</li>
+            <li>Макс. длительность разговора: X сек</li>
+          </ul>
+        </div>
+        <div class="questions-box"><strong>Вопросы:</strong>
+          <ul>
+            <li>Максимальная длительность разговора?</li>
+            <li>Что происходит при таймауте?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 5: Дверь открыта -->
+  <div class="detail-card" style="border-color:#34a853;">
+    <div class="dc-header" style="background:#34a853;">5. Дверь открыта</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#34a853;">
+        <div class="wf-top">
+          <div style="font-size:7px;color:#888;">[Лого УК]</div>
+          <div style="font-size:7px;color:#888;">10:30</div>
+        </div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#34a853;">✔</div>
+          <div class="wf-title" style="color:#34a853;">Дверь открыта</div>
+        </div>
+        <div class="wf-bottom" style="color:#34a853;">Закроется через 5 сек</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul>
+          <li>Зелёная индикация успеха (иконка)</li>
+          <li>Текст: «Дверь открыта»</li>
+          <li>Таймер обратного отсчёта</li>
+        </ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul>
+          <li>Номер квартиры</li>
+        </ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul>
+          <li>Звук успешного доступа</li>
+          <li>Голосовое: «Дверь открыта» (опц.)</li>
+        </ul>
+        <div class="info-box"><strong>Доп. информация:</strong>
+          <ul>
+            <li>Разговор завершается автоматически после открытия</li>
+            <li>После таймера → экран ожидания</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 6: Неверный номер -->
+  <div class="detail-card" style="border-color:#ea4335;">
+    <div class="dc-header" style="background:#ea4335;">6. Неверный номер</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#ea4335;">
+        <div class="wf-top">
+          <div style="font-size:7px;color:#888;">[Лого УК]</div>
+          <div style="font-size:7px;color:#888;">10:30</div>
+        </div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#ea4335;">✘</div>
+          <div class="wf-title" style="color:#ea4335;">Квартира не найдена</div>
+        </div>
+        <div class="wf-bottom" style="color:#ea4335;">Через 3 сек</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul>
+          <li>Красная индикация ошибки (иконка)</li>
+          <li>Текст: «Квартира не найдена»</li>
+          <li>Таймер → экран ожидания</li>
+        </ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul>
+          <li>Звук ошибки</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 7: Нет ответа -->
+  <div class="detail-card" style="border-color:#9e9e9e;">
+    <div class="dc-header" style="background:#9e9e9e;">7. Нет ответа</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#9e9e9e;">
+        <div class="wf-top">
+          <div style="font-size:7px;color:#888;">[Лого УК]</div>
+          <div style="font-size:7px;color:#888;">10:30</div>
+        </div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#9e9e9e;">📵</div>
+          <div class="wf-title" style="color:#9e9e9e;">Нет ответа</div>
+        </div>
+        <div class="wf-bottom">Через 3 сек</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul>
+          <li>Текст: «Нет ответа»</li>
+          <li>Иконка</li>
+          <li>Таймер → экран ожидания</li>
+        </ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul>
+          <li>Короткие гудки завершения</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 8: Вызов завершён -->
+  <div class="detail-card" style="border-color:#9e9e9e;">
+    <div class="dc-header" style="background:#9e9e9e;">8. Вызов завершён</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#9e9e9e;">
+        <div class="wf-top">
+          <div style="font-size:7px;color:#888;">[Лого УК]</div>
+          <div style="font-size:7px;color:#888;">10:30</div>
+        </div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#9e9e9e;">📵</div>
+          <div class="wf-title" style="color:#9e9e9e;">Вызов завершён</div>
+        </div>
+        <div class="wf-bottom">Через 3 сек</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul>
+          <li>Текст: «Вызов завершён»</li>
+          <li>Иконка</li>
+          <li>Таймер → экран ожидания</li>
+        </ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul>
+          <li>Короткие гудки завершения</li>
+        </ul>
+        <div class="info-box"><strong>Доп. информация:</strong>
+          <ul>
+            <li>Абонент ответил, поговорил, но не открыл дверь</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 3: BACKGROUND PROCESSES -->
+<!-- ================================================================ -->
+<h2>3. Фоновые процессы</h2>
+
+<div style="background:#fff;border-radius:12px;border:1px solid #ddd;padding:24px;overflow:auto;">
+  <table style="width:100%;border-collapse:collapse;font-size:12px;">
+    <thead>
+      <tr style="background:#e8f0fe;">
+        <th style="padding:8px 12px;text-align:left;border:1px solid #ddd;">#</th>
+        <th style="padding:8px 12px;text-align:left;border:1px solid #ddd;">Процесс</th>
+        <th style="padding:8px 12px;text-align:left;border:1px solid #ddd;">Триггер</th>
+        <th style="padding:8px 12px;text-align:left;border:1px solid #ddd;">Успех</th>
+        <th style="padding:8px 12px;text-align:left;border:1px solid #ddd;">Ошибка / Таймаут</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding:8px 12px;border:1px solid #ddd;">1</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;">Проверка номера квартиры</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;">Гость нажал 🔔</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;color:#009688;">→ Вызов квартиры</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;color:#ea4335;">→ Неверный номер</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px;border:1px solid #ddd;">2</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;">Ожидание ответа абонента</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;">Вызов отправлен</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;color:#009688;">→ Разговор</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;color:#9e9e9e;">→ Нет ответа</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px;border:1px solid #ddd;">3</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;">Решение абонента</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;">Абонент ответил</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;color:#34a853;">→ Дверь открыта</td>
+        <td style="padding:8px 12px;border:1px solid #ddd;color:#9e9e9e;">→ Вызов завершён</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 4: FULL-SIZE SCREENS -->
+<!-- ================================================================ -->
+<h2>4. Полноразмерные экраны (427x320, масштаб 2:3 от 640x480)</h2>
+<p class="section-desc">Каждый экран приближен к реальному виду дисплея. Тёмная тема, горизонтальная ориентация.</p>
+
+<div class="fullsize-grid">
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">1. Экран ожидания</div>
+    <div class="fullsize-screen">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="border:1px dashed #555;border-radius:4px;padding:4px 12px;font-size:10px;color:#aaa;">[Лого УК]</div>
+        <div style="text-align:right;">
+          <div style="font-size:28px;font-weight:700;color:#fff;line-height:1;">10:30</div>
+          <div style="font-size:10px;color:#888;">13 мая, вторник</div>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:36px;font-weight:300;color:#fff;">15°</div>
+        <div style="font-size:12px;color:#aaa;">Солнечно</div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">2. Набор номера</div>
+    <div class="fullsize-screen">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="font-size:9px;color:#555;">[Лого УК]</div>
+        <div style="font-size:10px;color:#888;">10:30</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:11px;color:#888;margin-bottom:8px;">Номер квартиры:</div>
+        <div style="font-size:48px;font-weight:700;letter-spacing:6px;color:#fff;">42<span style="color:#4285f4;">_</span></div>
+        <div style="font-size:11px;color:#aaa;margin-top:12px;">Нажмите 🔔 для вызова</div>
+      </div>
+      <div style="text-align:center;font-size:9px;color:#666;">✕ — сброс</div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">3. Вызов квартиры</div>
+    <div class="fullsize-screen" style="border-color:#009688;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="font-size:9px;color:#555;">[Лого УК]</div>
+        <div style="font-size:10px;color:#888;">10:30</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:56px;height:56px;border:3px solid #009688;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#009688;">📞</div>
+        <div style="font-size:20px;font-weight:700;color:#009688;">Вызов кв. 42</div>
+        <div style="font-size:11px;color:#888;margin-top:6px;">Ожидание ответа...</div>
+      </div>
+      <div style="text-align:center;font-size:16px;color:#009688;letter-spacing:8px;">● ● ●</div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">4. Разговор</div>
+    <div class="fullsize-screen" style="border-color:#009688;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="font-size:9px;color:#555;">[Лого УК]</div>
+        <div style="font-size:10px;color:#888;">10:30</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:56px;height:56px;border:3px solid #009688;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#009688;">🗣️</div>
+        <div style="font-size:20px;font-weight:700;color:#009688;">Разговор</div>
+        <div style="font-size:13px;color:#ccc;">кв. 42</div>
+        <div style="font-size:9px;color:#4caf50;margin-top:4px;">● Связь установлена</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="display:inline-block;border:2px solid #009688;border-radius:14px;padding:4px 18px;font-size:14px;color:#009688;font-weight:600;">0:12</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">5. Дверь открыта</div>
+    <div class="fullsize-screen" style="border-color:#34a853;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="font-size:9px;color:#555;">[Лого УК]</div>
+        <div style="font-size:10px;color:#888;">10:30</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:60px;height:60px;border:3px solid #34a853;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#34a853;">✔</div>
+        <div style="font-size:22px;font-weight:700;color:#34a853;">Дверь открыта</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="display:inline-block;border:2px solid #34a853;border-radius:14px;padding:4px 18px;font-size:12px;color:#34a853;">Закроется через <b>5</b> сек</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">6. Неверный номер</div>
+    <div class="fullsize-screen" style="border-color:#ea4335;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="font-size:9px;color:#555;">[Лого УК]</div>
+        <div style="font-size:10px;color:#888;">10:30</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:60px;height:60px;border:3px solid #ea4335;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#ea4335;">✘</div>
+        <div style="font-size:20px;font-weight:700;color:#ea4335;">Квартира не найдена</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="display:inline-block;border:2px solid #ea4335;border-radius:14px;padding:4px 18px;font-size:12px;color:#ea4335;">Через <b>3</b> сек</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">7. Нет ответа</div>
+    <div class="fullsize-screen" style="border-color:#9e9e9e;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="font-size:9px;color:#555;">[Лого УК]</div>
+        <div style="font-size:10px;color:#888;">10:30</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:60px;height:60px;border:3px solid #9e9e9e;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#9e9e9e;">📵</div>
+        <div style="font-size:20px;font-weight:700;color:#9e9e9e;">Нет ответа</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="display:inline-block;border:2px solid #9e9e9e;border-radius:14px;padding:4px 18px;font-size:12px;color:#9e9e9e;">Через <b>3</b> сек</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">8. Вызов завершён</div>
+    <div class="fullsize-screen" style="border-color:#9e9e9e;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="font-size:9px;color:#555;">[Лого УК]</div>
+        <div style="font-size:10px;color:#888;">10:30</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:60px;height:60px;border:3px solid #9e9e9e;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#9e9e9e;">📵</div>
+        <div style="font-size:20px;font-weight:700;color:#9e9e9e;">Вызов завершён</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="display:inline-block;border:2px solid #9e9e9e;border-radius:14px;padding:4px 18px;font-size:12px;color:#9e9e9e;">Через <b>3</b> сек</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      fontFamily: 'Inter, system-ui, sans-serif',
+      fontSize: '13px',
+      primaryColor: '#e8f0fe',
+      primaryBorderColor: '#4285f4',
+      lineColor: '#888',
+      textColor: '#1a1a1a'
+    },
+    flowchart: {
+      htmlLabels: true,
+      curve: 'basis',
+      padding: 20,
+      nodeSpacing: 40,
+      rankSpacing: 60
+    }
+  });
+</script>
+
+</body>
+</html>
