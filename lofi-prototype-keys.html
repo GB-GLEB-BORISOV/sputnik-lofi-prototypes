@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lo-fi Prototype: Flow "Ключи" — Спутник</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #f5f5f5;
+    color: #1a1a1a;
+    padding: 40px;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  h2 { font-size: 22px; font-weight: 700; margin: 48px 0 16px; }
+  .subtitle { font-size: 14px; color: #666; margin-bottom: 32px; }
+  .section-desc { font-size: 13px; color: #666; margin-bottom: 24px; }
+
+  .flow-container {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #ddd;
+    padding: 32px;
+    overflow: auto;
+  }
+
+  /* ====== SCREEN DETAIL CARDS ====== */
+  .screens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 24px;
+  }
+  .detail-card {
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .detail-card .dc-header {
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    background: #333;
+  }
+  .detail-card .dc-body {
+    padding: 16px;
+    display: flex;
+    gap: 16px;
+  }
+  .dc-wireframe {
+    flex-shrink: 0;
+    width: 140px;
+    height: 187px;
+    border: 2px solid #999;
+    border-radius: 6px;
+    padding: 6px;
+    background: #1a1a2e;
+    color: #eee;
+    font-size: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .dc-wireframe .wf-top { font-size: 7px; color: #888; }
+  .dc-wireframe .wf-center { text-align: center; }
+  .dc-wireframe .wf-icon { font-size: 22px; margin: 4px 0; }
+  .dc-wireframe .wf-title { font-size: 9px; font-weight: 700; }
+  .dc-wireframe .wf-sub { font-size: 7px; color: #aaa; margin-top: 2px; }
+  .dc-wireframe .wf-bottom { text-align: center; font-size: 7px; color: #888; }
+
+  .dc-info { flex: 1; font-size: 11px; }
+  .dc-info h4 { font-size: 11px; font-weight: 700; margin: 8px 0 3px; color: #333; }
+  .dc-info h4:first-child { margin-top: 0; }
+  .dc-info ul { padding-left: 14px; line-height: 1.6; color: #444; }
+
+  .dc-info h4.mandatory::before {
+    content: ""; display: inline-block; width: 7px; height: 7px;
+    background: #333; border-radius: 50%; margin-right: 4px; vertical-align: middle;
+  }
+  .dc-info h4.optional::before {
+    content: ""; display: inline-block; width: 7px; height: 7px;
+    border: 2px solid #333; border-radius: 50%; margin-right: 4px; vertical-align: middle;
+  }
+  .dc-info h4.sound::before {
+    content: "))"; font-size: 8px; font-weight: 700; margin-right: 4px; color: #333;
+  }
+
+  .tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 600; margin-right: 4px; }
+  .tag-question { background: #fff3cd; color: #856404; border: 1px solid #f9ab00; }
+  .tag-info { background: #eee; color: #555; border: 1px solid #bbb; }
+
+  .questions-box, .info-box {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    line-height: 1.6;
+  }
+  .questions-box { background: #fff9e6; border: 1px solid #f9ab00; }
+  .questions-box strong { color: #b37a00; }
+  .info-box { background: #f3f3f3; border: 1px solid #bbb; }
+  .info-box strong { color: #555; }
+
+  .questions-box ul, .info-box ul { padding-left: 14px; }
+
+  /* ====== FULL SIZE SCREENS ====== */
+  .fullsize-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+  .fullsize-item { flex-shrink: 0; }
+  .fullsize-label { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .fullsize-screen {
+    width: 320px;
+    height: 427px;
+    border: 3px solid #333;
+    border-radius: 8px;
+    background: #1a1a2e;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px;
+    font-family: system-ui, sans-serif;
+  }
+
+  .mermaid { width: 100%; }
+</style>
+</head>
+<body>
+
+<h1>Lo-fi Prototypes: Flow "Ключи"</h1>
+<p class="subtitle">Спутник — домофон с дисплеем | 480x640px, 2.83" TFT | Не сенсорный | v1.0 от 21.02.2026</p>
+
+<!-- ================================================================ -->
+<!-- SECTION 1: FLOW DIAGRAM -->
+<!-- ================================================================ -->
+<h2>1. Flow-диаграмма</h2>
+<p class="section-desc">Голубые блоки — фоновые процессы (невидимы для пользователя). Зелёные стрелки — успех. Красные — ошибка.</p>
+
+<div class="flow-container">
+<pre class="mermaid">
+flowchart TD
+    classDef screen fill:#fff,stroke:#333,stroke-width:2px,color:#333
+    classDef bgProc fill:#e8f0fe,stroke:#4285f4,stroke-width:2px,color:#1a1a1a
+    classDef success fill:#e6f4ea,stroke:#34a853,stroke-width:2px,color:#1a1a1a
+    classDef error fill:#fce8e6,stroke:#ea4335,stroke-width:2px,color:#1a1a1a
+    classDef warning fill:#fef7e0,stroke:#f9ab00,stroke-width:2px,color:#1a1a1a
+    classDef promo fill:#e8eaf6,stroke:#1a73e8,stroke-width:2px,color:#1a1a1a
+    classDef service fill:#f1f3f4,stroke:#5f6368,stroke-width:2px,color:#1a1a1a
+
+    S1["🖥️ <b>1. Экран ожидания</b><br/>Адрес, подъезд, кв.<br/>Статус системы<br/>«Приложите ключ или<br/>введите номер квартиры»"]:::screen
+
+    S2["📺 <b>2. Экран ожидания + реклама</b><br/>Видео 3–5 сек /<br/>статичное изображение /<br/>бегущая строка"]:::screen
+
+    S1 -- "периодически" --> S2
+    S2 -. "после проигрывания" .-> S1
+
+    S1 -- "ключ приложен" --> BG1
+
+    BG1{{"⚙️ <b>Проверка<br/>регистрации в МП</b>"}}:::bgProc
+
+    BG1 -- "❌ НЕТ регистрации" --> S6
+    BG1 -- "✅ ЕСТЬ регистрация" --> BG2
+
+    BG2{{"⚙️ <b>Проверка<br/>валидности ключа</b>"}}:::bgProc
+
+    BG2 -- "❌ НЕВАЛИДНЫЙ" --> S6
+    BG2 -- "✅ ВАЛИДНЫЙ" --> BG3
+
+    BG3{{"⚙️ <b>Определение<br/>типа ключа</b>"}}:::bgProc
+
+    BG3 -- "🔧 Сервисный" --> S5
+    BG3 -- "👤 Обычный / Детский" --> BG4
+
+    BG4{{"⚙️ <b>Показать промо МП?</b><br/>(нет регистрации в МП)"}}:::bgProc
+
+    BG4 -- "✅ ДА" --> S10
+    BG4 -- "❌ НЕТ" --> BG5
+
+    S10 -. "через X сек" .-> BG5
+
+    BG5{{"⚙️ <b>Показать<br/>информирование?</b>"}}:::bgProc
+
+    BG5 -- "✅ Задолженность за домофон" --> S7
+    BG5 -- "✅ Задолженность за ЖКХ" --> S8
+    BG5 -- "✅ Ключ скомпрометирован" --> S9
+    BG5 -- "❌ НЕТ" --> S3
+
+    S7 -. "через X сек" .-> S3
+    S8 -. "через X сек" .-> S3
+    S9 -. "через X сек (?)" .-> S3
+
+    S5["🔧 <b>5. Открыто<br/>сервисным ключом</b><br/>Таймер"]:::service
+
+    S10["📱 <b>10. Промо-экран МП</b><br/>Заголовок функции<br/>Иллюстрация<br/>QR-код для скачивания"]:::promo
+
+    S3["✅ <b>3. Открыто ключом</b><br/>«Входите, дверь открыта»<br/>Таймер обратного отсчёта"]:::success
+
+    S4["✅ <b>4. Открыто<br/>детским ключом</b><br/>«Входите, дверь открыта»<br/>Таймер"]:::success
+
+    S6["❌ <b>6. Отказано<br/>в доступе</b><br/>«Доступ запрещён»<br/>Таймер"]:::error
+
+    S7["⚠️ <b>7. Задолженность<br/>за домофон</b><br/>Сумма, период<br/>QR для оплаты<br/>Таймер"]:::warning
+
+    S8["⚠️ <b>8. Задолженность<br/>за ЖКХ</b><br/>Сумма, период<br/>QR для оплаты<br/>Таймер"]:::warning
+
+    S9["⚠️ <b>9. Ключ<br/>скомпрометирован</b><br/>«Обратитесь в УК»<br/>Контакты"]:::error
+
+    BG3 -- "👶 Детский" --> S4
+
+    S3 -. "через X мс" .-> S1
+    S4 -. "через X мс" .-> S1
+    S5 -. "через X мс" .-> S1
+    S6 -. "через X мс" .-> S1
+</pre>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 2: SCREEN DETAIL CARDS -->
+<!-- ================================================================ -->
+<h2>2. Детализация экранов</h2>
+<p class="section-desc">Каждый экран: wireframe + обязательные/опциональные элементы + звук + вопросы + доп. информация.</p>
+
+<div class="screens-grid">
+
+  <!-- Card 1: Экран ожидания -->
+  <div class="detail-card">
+    <div class="dc-header">1. Стандартный экран ожидания</div>
+    <div class="dc-body">
+      <div class="dc-wireframe">
+        <div class="wf-top">ул. Примерная, д. 42<br>Подъезд 3 | кв. 1–120<br><span style="color:#4caf50;">● Онлайн</span></div>
+        <div class="wf-center">
+          <div style="width:30px;height:30px;border:1px dashed #555;border-radius:50%;margin:4px auto;display:flex;align-items:center;justify-content:center;font-size:6px;color:#777;">🔑</div>
+          <div class="wf-title">Приложите ключ</div>
+          <div class="wf-sub">или введите номер квартиры</div>
+        </div>
+        <div class="wf-bottom">14:35 | -5°C<br>[Лого УК]</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul><li>Адрес, номер подъезда</li><li>Диапазон квартир</li><li>Статус системы</li><li>Предложение действия</li></ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul><li>Часы и дата</li><li>Логотип / контакты УК</li><li>Информация о погоде</li></ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul><li>Нет (тишина)</li></ul>
+        <div class="questions-box"><strong>Вопросы:</strong><ul><li>Статусы системы: какие варианты?</li><li>Min/max длина поля «Адрес»?</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Реклама -->
+  <div class="detail-card">
+    <div class="dc-header">2. Экран ожидания + рекламный блок</div>
+    <div class="dc-body">
+      <div class="dc-wireframe">
+        <div class="wf-top" style="color:#666;">ул. Примерная, д. 42</div>
+        <div class="wf-center">
+          <div style="border:1px solid #4285f4;padding:6px;border-radius:3px;background:rgba(66,133,244,0.15);margin:4px 0;">
+            <div style="font-size:7px;color:#4285f4;">РЕКЛАМНЫЙ БЛОК</div>
+            <div style="font-size:6px;color:#888;">Видео / изображение /<br>бегущая строка</div>
+          </div>
+        </div>
+        <div class="wf-bottom">[QR-код]</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul><li>Рекламный контент</li><li>Формат: видео / изображение / текст</li></ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul><li>Адрес, номер подъезда</li><li>Звуковое сопровождение</li></ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul><li>Озвучивание рекламы (опц.)</li><li>Не проигрывается ночью</li></ul>
+        <div class="info-box"><strong>Доп. информация:</strong><ul><li>Запрет рекламы в ночной период</li><li>Запрет рекламы при ЧС</li><li>Запрет при отсутствии интернета</li></ul></div>
+        <div class="questions-box"><strong>Вопросы:</strong><ul><li>Интервал между рекламными блоками?</li><li>Макс. хронометраж блока?</li><li>Можно ли прервать рекламу ключом?</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: Открыто ключом -->
+  <div class="detail-card" style="border-color:#34a853;">
+    <div class="dc-header" style="background:#34a853;">3. Открыто ключом</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#34a853;">
+        <div class="wf-top">ул. Примерная, д. 42</div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#34a853;">✔</div>
+          <div class="wf-title" style="color:#34a853;">Входите</div>
+          <div class="wf-sub">Дверь открыта</div>
+          <div style="font-size:7px;color:#888;margin-top:2px;">кв. 42</div>
+        </div>
+        <div class="wf-bottom" style="color:#34a853;">Закроется через 5 сек</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul><li>Текстовый заголовок</li><li>Статус успеха (иконка)</li><li>Таймер обратного отсчёта</li></ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul><li>Номер квартиры</li><li>Имя / приветствие владельца</li></ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul><li>Звук успешного доступа</li><li>Озвучивание заголовка (опц.)</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 4: Детский ключ -->
+  <div class="detail-card" style="border-color:#34a853;">
+    <div class="dc-header" style="background:#34a853;">4. Открыто детским ключом</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#34a853;">
+        <div class="wf-top">ул. Примерная, д. 42</div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#34a853;">✔</div>
+          <div class="wf-title" style="color:#34a853;">Входите</div>
+          <div class="wf-sub">Дверь открыта</div>
+        </div>
+        <div class="wf-bottom" style="color:#34a853;">Закроется через 5 сек</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul><li>Текстовый заголовок</li><li>Статус успеха</li><li>Таймер</li></ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul><li>Номер квартиры</li></ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul><li>Звук успешного доступа</li></ul>
+        <div class="info-box"><strong>Доп. информация:</strong><ul><li>Не показываем рекламу</li><li>Не показываем задолженность</li></ul></div>
+        <div class="questions-box"><strong>Вопросы:</strong><ul><li>Визуально отличается от «Открыто ключом»?</li><li>Нужно ли push-уведомление родителю?</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 5: Сервисный -->
+  <div class="detail-card" style="border-color:#5f6368;">
+    <div class="dc-header" style="background:#5f6368;">5. Открыто сервисным ключом</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#5f6368;">
+        <div class="wf-top">ул. Примерная, д. 42</div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#9aa0a6;">⚙</div>
+          <div class="wf-title">Открыто</div>
+          <div class="wf-sub">Сервисный ключ</div>
+          <div style="font-size:6px;color:#666;margin-top:2px;">[ID сервисной орг.]</div>
+        </div>
+        <div class="wf-bottom">Закроется через 5 сек</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul><li>Заголовок</li><li>Статус (иконка)</li><li>Таймер</li></ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul><li>ID сервисной организации</li></ul>
+        <div class="info-box"><strong>Доп. информация:</strong><ul><li>Не показываем рекламу</li><li>Не показываем информирование</li><li>Логируется отдельно</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 6: Отказано -->
+  <div class="detail-card" style="border-color:#ea4335;">
+    <div class="dc-header" style="background:#ea4335;">6. Отказано в доступе</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#ea4335;">
+        <div class="wf-top">ул. Примерная, д. 42</div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#ea4335;">✘</div>
+          <div class="wf-title" style="color:#ea4335;">Доступ запрещён</div>
+          <div class="wf-sub">[Пояснение отказа]</div>
+        </div>
+        <div class="wf-bottom" style="color:#ea4335;">Через 5 сек</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul><li>Заголовок</li><li>Статус блокировки</li><li>Таймер</li></ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul><li>Текст пояснения отказа</li><li>Контакты УК / техподдержки</li></ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul><li>Звук отказа в доступе</li><li>Озвучивание заголовка (опц.)</li></ul>
+        <div class="questions-box"><strong>Вопросы:</strong><ul><li>Разные тексты для «невалидный ключ» и «нет регистрации»?</li><li>На какие статусы блокировки ориентируемся?</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 7: Задолженность домофон -->
+  <div class="detail-card" style="border-color:#f9ab00;">
+    <div class="dc-header" style="background:#f9ab00;color:#000;">7. Задолженность за домофон</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#f9ab00;">
+        <div class="wf-top">ул. Примерная, д. 42<br>кв. 42</div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#f9ab00;">⚠</div>
+          <div class="wf-title" style="color:#f9ab00;">Задолженность</div>
+          <div class="wf-sub">за домофон</div>
+          <div style="font-size:6px;color:#888;margin-top:2px;">[Сумма: 1 250 руб.]</div>
+        </div>
+        <div class="wf-bottom">[QR для оплаты]<br><span style="color:#f9ab00;">Таймер: X сек</span></div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul><li>Заголовок</li><li>Текст пояснения (сумма, период)</li><li>Таймер</li></ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul><li>Контакты для уточнения</li><li>QR-код для оплаты</li><li>Номер квартиры</li></ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul><li>Звук информационного сообщения</li></ul>
+        <div class="info-box"><strong>Доп. информация:</strong><ul><li>НЕ блокирующий — после таймера дверь откроется</li><li>Не показываем при детском ключе</li><li>Не показываем при сервисном ключе</li></ul></div>
+        <div class="questions-box"><strong>Вопросы:</strong><ul><li>Какие типы/виды задолженностей?</li><li>Показываем сумму или только факт?</li><li>Источник данных о задолженности?</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 8: Задолженность ЖКХ -->
+  <div class="detail-card" style="border-color:#f9ab00;">
+    <div class="dc-header" style="background:#f9ab00;color:#000;">8. Задолженность за ЖКХ</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#f9ab00;">
+        <div class="wf-top">ул. Примерная, д. 42<br>кв. 42</div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#f9ab00;">⚠</div>
+          <div class="wf-title" style="color:#f9ab00;">Задолженность</div>
+          <div class="wf-sub">за ЖКХ</div>
+          <div style="font-size:6px;color:#888;margin-top:2px;">[Сумма / период]</div>
+        </div>
+        <div class="wf-bottom">[QR для оплаты]<br><span style="color:#f9ab00;">Таймер: X сек</span></div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul><li>Заголовок</li><li>Текст пояснения</li><li>Таймер</li></ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul><li>Контакты для уточнения</li><li>QR-код для оплаты</li></ul>
+        <div class="questions-box"><strong>Вопросы:</strong><ul><li>Могут ли обе задолженности показываться одновременно?</li><li>Последовательно? Приоритет?</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 9: Скомпрометирован -->
+  <div class="detail-card" style="border-color:#ea4335;">
+    <div class="dc-header" style="background:#ea4335;">9. Ключ скомпрометирован</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#ea4335;">
+        <div class="wf-top">ул. Примерная, д. 42</div>
+        <div class="wf-center">
+          <div class="wf-icon" style="color:#ea4335;">⚠</div>
+          <div class="wf-title" style="color:#ea4335;">Ключ скомпром.</div>
+          <div class="wf-sub">Обратитесь в УК</div>
+        </div>
+        <div class="wf-bottom">[Контакты УК]<br>[QR на МП]</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul><li>Заголовок</li><li>Текст пояснения</li><li>Статус предупреждения</li></ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul><li>Контакты УК / техподдержки</li><li>QR-код на приложение</li></ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul><li>Звук предупреждения</li></ul>
+        <div class="questions-box"><strong>Вопросы:</strong><ul><li>Открывается ли дверь скомпром. ключом?</li><li>Или это блокирующий экран?</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 10: Промо -->
+  <div class="detail-card" style="border-color:#1a73e8;">
+    <div class="dc-header" style="background:#1a73e8;">10. Промо-экран функции МП (шаблон)</div>
+    <div class="dc-body">
+      <div class="dc-wireframe" style="border-color:#1a73e8;">
+        <div class="wf-top" style="color:#1a73e8;">[Лого Спутник]</div>
+        <div class="wf-center">
+          <div style="width:28px;height:28px;border:1px dashed #555;border-radius:4px;margin:4px auto;display:flex;align-items:center;justify-content:center;font-size:6px;color:#777;">📱</div>
+          <div class="wf-title" style="color:#1a73e8;">Откройте дверь<br>из приложения!</div>
+          <div class="wf-sub">[Описание выгоды]</div>
+        </div>
+        <div class="wf-bottom">[QR для скачивания]</div>
+      </div>
+      <div class="dc-info">
+        <h4 class="mandatory">Обязательные элементы</h4>
+        <ul><li>Заголовок функции</li><li>Иллюстрация / иконка</li><li>QR-код для скачивания</li></ul>
+        <h4 class="optional">Опциональные элементы</h4>
+        <ul><li>Краткое описание выгоды</li><li>Логотип приложения</li></ul>
+        <h4 class="sound">Звуковая индикация</h4>
+        <ul><li>Нет</li></ul>
+        <div class="info-box"><strong>Доп. информация:</strong><ul><li>Только если нет регистрации в МП</li><li>Один промо за одно открытие (ротация)</li><li>Таймер: через X сек далее</li></ul></div>
+        <div style="margin-top:8px;padding:6px;background:#e8eaf6;border-radius:4px;font-size:9px;color:#333;">
+          <strong>Варианты промо:</strong> Архив 3 дня · Бесключевой доступ · Многоадресность · Алиса · Расш. история · Код доступа · Мгнов. загрузка · Видео онлайн · Приём звонков · История посещений · Открытие двери в МП
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 3: FULL-SIZE SCREENS -->
+<!-- ================================================================ -->
+<h2>3. Полноразмерные экраны (320x427, масштаб 2:3 от 480x640)</h2>
+<p class="section-desc">Каждый экран приближен к реальному виду дисплея домофона. Тёмная тема.</p>
+
+<div class="fullsize-grid">
+  <div class="fullsize-item">
+    <div class="fullsize-label">1. Экран ожидания</div>
+    <div class="fullsize-screen">
+      <div>
+        <div style="display:flex;justify-content:space-between;"><div><div style="font-size:12px;font-weight:600;">ул. Примерная, д. 42</div><div style="font-size:10px;color:#aaa;">Подъезд 3 | кв. 1–120</div></div><div style="font-size:9px;color:#888;text-align:right;">14:35<br>21 фев</div></div>
+        <div style="margin-top:6px;font-size:9px;color:#4caf50;">● Онлайн</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:50px;height:50px;border:2px dashed #555;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#777;">🔑</div>
+        <div style="font-size:16px;font-weight:600;">Приложите ключ</div>
+        <div style="font-size:11px;color:#aaa;">или введите номер квартиры</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+        <div style="width:36px;height:14px;border:1px dashed #555;border-radius:2px;font-size:6px;color:#777;text-align:center;line-height:14px;">[Лого УК]</div>
+        <div style="font-size:9px;color:#888;">-5°C ☁</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">3. Открыто ключом</div>
+    <div class="fullsize-screen" style="border-color:#34a853;">
+      <div><div style="font-size:11px;">ул. Примерная, д. 42</div><div style="font-size:9px;color:#aaa;">Подъезд 3</div></div>
+      <div style="text-align:center;">
+        <div style="width:66px;height:66px;border:3px solid #34a853;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:32px;color:#34a853;">✔</div>
+        <div style="font-size:20px;font-weight:700;color:#34a853;">Входите</div>
+        <div style="font-size:13px;color:#ccc;">Дверь открыта</div>
+        <div style="font-size:10px;color:#888;margin-top:8px;">кв. 42</div>
+      </div>
+      <div style="text-align:center;"><div style="display:inline-block;border:2px solid #34a853;border-radius:14px;padding:5px 16px;font-size:11px;color:#34a853;">Закроется через <b>5</b> сек</div></div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">6. Отказано в доступе</div>
+    <div class="fullsize-screen" style="border-color:#ea4335;">
+      <div><div style="font-size:11px;">ул. Примерная, д. 42</div><div style="font-size:9px;color:#aaa;">Подъезд 3</div></div>
+      <div style="text-align:center;">
+        <div style="width:66px;height:66px;border:3px solid #ea4335;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:32px;color:#ea4335;">✘</div>
+        <div style="font-size:20px;font-weight:700;color:#ea4335;">Доступ запрещён</div>
+        <div style="font-size:11px;color:#888;margin-top:8px;">[Ключ не зарегистрирован]</div>
+      </div>
+      <div style="text-align:center;"><div style="display:inline-block;border:2px solid #ea4335;border-radius:14px;padding:5px 16px;font-size:11px;color:#ea4335;">Через <b>5</b> сек</div></div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">7. Задолженность за домофон</div>
+    <div class="fullsize-screen" style="border-color:#f9ab00;">
+      <div><div style="font-size:11px;">ул. Примерная, д. 42</div><div style="font-size:9px;color:#aaa;">Подъезд 3 | кв. 42</div></div>
+      <div style="text-align:center;">
+        <div style="width:54px;height:54px;border:3px solid #f9ab00;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#f9ab00;">⚠</div>
+        <div style="font-size:16px;font-weight:700;color:#f9ab00;">Задолженность</div>
+        <div style="font-size:12px;color:#ccc;">за домофон</div>
+        <div style="font-size:10px;color:#888;margin-top:6px;">[Сумма: 1 250 руб.]</div>
+      </div>
+      <div>
+        <div style="text-align:center;margin-bottom:8px;"><div style="width:50px;height:50px;border:1px dashed #555;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:7px;color:#777;border-radius:3px;">[QR для<br>оплаты]</div></div>
+        <div style="text-align:center;"><div style="display:inline-block;border:2px solid #f9ab00;border-radius:14px;padding:5px 16px;font-size:11px;color:#f9ab00;">Откроется через <b>5</b> сек</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fullsize-item">
+    <div class="fullsize-label">10. Промо-экран МП</div>
+    <div class="fullsize-screen" style="border-color:#1a73e8;">
+      <div style="display:flex;justify-content:space-between;"><div style="width:54px;height:16px;border:1px dashed #555;border-radius:2px;font-size:6px;color:#777;text-align:center;line-height:16px;">[Лого Спутник]</div><div style="font-size:8px;color:#666;">ПРОМО</div></div>
+      <div style="text-align:center;">
+        <div style="width:70px;height:70px;border:2px dashed #555;border-radius:8px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#777;">[Иконка<br>функции]</div>
+        <div style="font-size:16px;font-weight:700;color:#1a73e8;">Откройте дверь<br>из приложения!</div>
+        <div style="font-size:10px;color:#aaa;margin-top:6px;padding:0 12px;">Установите приложение Спутник</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:60px;height:60px;border:1px dashed #555;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:7px;color:#777;border-radius:3px;">[QR-код]</div>
+        <div style="font-size:8px;color:#666;">Наведите камеру</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      fontFamily: 'Inter, system-ui, sans-serif',
+      fontSize: '13px',
+      primaryColor: '#e8f0fe',
+      primaryBorderColor: '#4285f4',
+      lineColor: '#888',
+      textColor: '#1a1a1a'
+    },
+    flowchart: {
+      htmlLabels: true,
+      curve: 'basis',
+      padding: 20,
+      nodeSpacing: 40,
+      rankSpacing: 60
+    }
+  });
+</script>
+
+</body>
+</html>
